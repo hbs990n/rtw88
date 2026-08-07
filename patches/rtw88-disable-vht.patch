@@ -1,0 +1,48 @@
+--- a/rtw88/main.c
++++ b/rtw88/main.c
+@@ -1573,45 +1573,6 @@
+ static void rtw_init_vht_cap(struct rtw_dev *rtwdev,
+ 			     struct ieee80211_sta_vht_cap *vht_cap)
+ {
+-	struct rtw_efuse *efuse = &rtwdev->efuse;
+-	u16 mcs_map = 0;
+-	__le16 highest;
+-	int i;
+-
+-	if (efuse->hw_cap.ptcl != EFUSE_HW_CAP_IGNORE &&
+-	    efuse->hw_cap.ptcl != EFUSE_HW_CAP_PTCL_VHT)
+-		return;
+-
+-	vht_cap->vht_supported = true;
+-	vht_cap->cap = IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
+-		       IEEE80211_VHT_CAP_SHORT_GI_80 |
+-		       IEEE80211_VHT_CAP_RXSTBC_1 |
+-		       IEEE80211_VHT_CAP_HTC_VHT |
+-		       IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK |
+-		       0;
+-	if (rtwdev->hal.rf_path_num > 1)
+-		vht_cap->cap |= IEEE80211_VHT_CAP_TXSTBC;
+-	vht_cap->cap |= IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE |
+-			IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE;
+-	vht_cap->cap |= (rtwdev->hal.bfee_sts_cap <<
+-			IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT);
+-
+-	if (rtw_chip_has_rx_ldpc(rtwdev))
+-		vht_cap->cap |= IEEE80211_VHT_CAP_RXLDPC;
+-
+-	for (i = 0; i < 8; i++) {
+-		if (i < efuse->hw_cap.nss)
+-			mcs_map |= IEEE80211_VHT_MCS_SUPPORT_0_9 << (i * 2);
+-		else
+-			mcs_map |= IEEE80211_VHT_MCS_NOT_SUPPORTED << (i * 2);
+-	}
+-
+-	highest = cpu_to_le16(390 * efuse->hw_cap.nss);
+-
+-	vht_cap->vht_mcs.rx_mcs_map = cpu_to_le16(mcs_map);
+-	vht_cap->vht_mcs.tx_mcs_map = cpu_to_le16(mcs_map);
+-	vht_cap->vht_mcs.rx_highest = highest;
+-	vht_cap->vht_mcs.tx_highest = highest;
+ }
+ 
+ static u16 rtw_get_max_scan_ie_len(struct rtw_dev *rtwdev)
