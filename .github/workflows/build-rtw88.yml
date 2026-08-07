@@ -15,10 +15,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-14 make
 
-      - name: Install pahole 1.30 from Debian (supports --btf_features)
+      - name: Install pahole 1.31 from Debian (supports --btf_features)
         run: |
-          curl -fL -o /tmp/libdwarves1.deb "https://deb.debian.org/debian/pool/main/d/dwarves/libdwarves1_1.30-1_amd64.deb"
-          curl -fL -o /tmp/pahole.deb "https://deb.debian.org/debian/pool/main/d/dwarves/pahole_1.30-1_amd64.deb"
+          curl -fL -o /tmp/libdwarves1.deb "https://deb.debian.org/debian/pool/main/d/dwarves/libdwarves1_1.31-2_amd64.deb"
+          curl -fL -o /tmp/pahole.deb "https://deb.debian.org/debian/pool/main/d/dwarves/pahole_1.31-2_amd64.deb"
           sudo dpkg -i /tmp/libdwarves1.deb /tmp/pahole.deb
           pahole --version
 
