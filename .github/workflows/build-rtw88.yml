@@ -13,7 +13,14 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-14 make pahole dwarves
+          sudo apt-get install -y gcc-14 make
+
+      - name: Install pahole 1.30 from Debian (supports --btf_features)
+        run: |
+          curl -fL -o /tmp/libdwarves1.deb "https://deb.debian.org/debian/pool/main/d/dwarves/libdwarves1_1.30-1_amd64.deb"
+          curl -fL -o /tmp/pahole.deb "https://deb.debian.org/debian/pool/main/d/dwarves/pahole_1.30-1_amd64.deb"
+          sudo dpkg -i /tmp/libdwarves1.deb /tmp/pahole.deb
+          pahole --version
 
       - name: Download Debian kernel headers (6.12.74+deb13+1)
         run: |
@@ -33,7 +40,7 @@ jobs:
 
       - name: Build modules
         run: |
-          make -C /usr/src/linux-headers-6.12.74+deb13+1-amd64 M="$PWD/rtw88" CC=gcc-14 modules -j"$(nproc)"
+          make -C /usr/src/linux-headers-6.12.74+deb13+1-amd64 M="$PWD/rtw88" CC=gcc-14 modules -j"$(nproc)" -k
 
       - name: Verify built modules
         run: |
