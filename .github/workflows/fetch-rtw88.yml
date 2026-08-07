@@ -2,17 +2,12 @@ name: Fetch rtw88 source
 
 on:
   workflow_dispatch:
-添加评论
-正在评论 第 3-4 行
-取消
-评论
-
-permissions:
-  contents: write
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout target repo
         uses: actions/checkout@v4
