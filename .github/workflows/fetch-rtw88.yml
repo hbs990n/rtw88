@@ -1,0 +1,35 @@
+name: Fetch rtw88 source
+
+on:
+  workflow_dispatch:
+添加评论
+正在评论 第 3-4 行
+取消
+评论
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      - name: Sparse-checkout rtw88 from gregkh/linux v6.12.74
+        run: |
+          rm -rf rtw88 linux
+          git clone --depth 1 --filter=blob:none --sparse --branch v6.12.74 https://github.com/gregkh/linux.git
+          git -C linux sparse-checkout set drivers/net/wireless/realtek/rtw88
+          mv linux/drivers/net/wireless/realtek/rtw88 rtw88
+          rm -rf linux
+
+      - name: Show fetched files
+        run: ls -la rtw88 | head -40
+
+      - name: Commit and push
+        run: |
+          git add rtw88
+          git -c user.name="rtw88-fetcher" -c user.email="rtw88-fetcher@users.noreply.github.com" commit -m "Import rtw88 from gregkh/linux v6.12.74"
+          git push
