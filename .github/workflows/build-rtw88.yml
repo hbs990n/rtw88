@@ -17,9 +17,10 @@ jobs:
 
       - name: Install pahole 1.31 from Debian (supports --btf_features)
         run: |
+          curl -fL -o /tmp/libbpf1.deb "https://deb.debian.org/debian/pool/main/libb/libbpf/libbpf1_1.7.0-1_amd64.deb"
           curl -fL -o /tmp/libdwarves1.deb "https://deb.debian.org/debian/pool/main/d/dwarves/libdwarves1_1.31-2_amd64.deb"
           curl -fL -o /tmp/pahole.deb "https://deb.debian.org/debian/pool/main/d/dwarves/pahole_1.31-2_amd64.deb"
-          sudo dpkg -i /tmp/libdwarves1.deb /tmp/pahole.deb
+          sudo dpkg -i /tmp/libbpf1.deb /tmp/libdwarves1.deb /tmp/pahole.deb
           pahole --version
 
       - name: Download Debian kernel headers (6.12.74+deb13+1)
