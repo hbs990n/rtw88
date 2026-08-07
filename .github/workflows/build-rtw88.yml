@@ -1,0 +1,47 @@
+name: Build rtw88 modules
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-14 make
+
+      - name: Download Debian kernel headers (6.12.74+deb13+1)
+        run: |
+          mkdir -p debs
+          curl -fL -o debs/common.deb "https://snapshot.debian.org/archive/debian/20260314T143719Z/pool/main/l/linux/linux-headers-6.12.74%2Bdeb13%2B1-common_6.12.74-2_all.deb"
+          curl -fL -o debs/amd64.deb "https://snapshot.debian.org/archive/debian/20260314T143719Z/pool/main/l/linux/linux-headers-6.12.74%2Bdeb13%2B1-amd64_6.12.74-2_amd64.deb"
+          curl -fL -o debs/kbuild.deb "https://snapshot.debian.org/archive/debian/20260314T143719Z/pool/main/l/linux/linux-kbuild-6.12.74%2Bdeb13%2B1_6.12.74-2_amd64.deb"
+          ls -la debs/
+
+      - name: Extract headers to /
+        run: |
+          for d in debs/*.deb; do sudo dpkg-deb -x "$d" /; done
+          ls -la /usr/src/linux-headers-6.12.74+deb13+1-amd64/ | head -20
+
+      - name: Apply VHT-disable patch
+        run: patch -p1 < patches/rtw88-disable-vht.patch
+
+      - name: Build modules
+        run: |
+          make -C /usr/src/linux-headers-6.12.74+deb13+1-amd64 M="$PWD/rtw88" CC=gcc-14 modules -j"$(nproc)"
+
+      - name: Verify built modules
+        run: |
+          ls -la rtw88/*.ko
+          modinfo rtw88/rtw88_core.ko | head -8
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtw88-ko
+          path: rtw88/*.ko
